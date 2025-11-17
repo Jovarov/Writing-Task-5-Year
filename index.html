@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Writing Task</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Verdana, sans-serif;
+            background: #000000;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            padding: 40px;
+        }
+        
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-size: 36px;
+        }
+        
+        .subtitle {
+            color: #7f8c8d;
+            margin-bottom: 30px;
+            font-size: 16px;
+        }
+        
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        
+        .form-full {
+            grid-column: 1 / -1;
+        }
+        
+        .input-group {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        label {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+        
+        input[type="text"],
+        input[type="date"] {
+            padding: 12px 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+        
+        input[type="text"]:focus,
+        input[type="date"]:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+        }
+        
+        .btn {
+            width: 100%;
+            padding: 16px;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 10px;
+        }
+        
+        .btn-primary {
+            background: #e2e8f0; /*light grey*/
+            color: #000000;
+        }
+        
+        .btn-primary:hover {
+            background: #e2e8f0;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .btn-primary:disabled {
+            background: #cbd5e0;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .btn-success {
+            background: #27ae60;
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background: #229954;
+        }
+        
+        .warning-box {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 16px;
+            margin-bottom: 25px;
+            border-radius: 4px;
+        }
+        
+        .warning-box strong {
+            display: block;
+            color: #856404;
+            margin-bottom: 8px;
+        }
+        
+        .warning-box ul {
+            margin-left: 20px;
+            color: #856404;
+        }
+        
+        .writing-area {
+            width: 100%;
+            height: 70vh;
+            padding: 20px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 16px;
+            font-family: Georgia, 'Times New Roman', serif;
+            line-height: 1.8;
+            resize: none;
+            margin-bottom: 20px;
+        }
+        
+        .writing-area:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+        }
+        
+        .word-count {
+            text-align: right;
+            color: #7f8c8d;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+        
+        .word-count.low {
+            color: #e74c3c;
+        }
+        
+        .word-count.good {
+            color: #27ae60;
+        }
+        
+        .success-message {
+            text-align: center;
+            padding: 60px 20px;
+        }
+        
+        .success-icon {
+            font-size: 80px;
+            color: #27ae60;
+            margin-bottom: 20px;
+        }
+        
+        .error-message {
+            background: #fed7d7;
+            color: #c53030;
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #c53030;
+        }
+        
+        .timer {
+            display: none !important;
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            font-size: 16px;
+            font-weight: 600;
+            color: #2c3e50;
+            z-index: 1000;
+        }
+        
+        .info-bar {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            font-size: 14px;
+            color: #2c3e50;
+            z-index: 1000;
+        }
+        
+        #writing-screen {
+            display: none;
+        }
+        
+        #submit-screen {
+            display: none;
+        }
+        
+        /* Fullscreen writing mode */
+        .fullscreen-mode {
+            background: white;
+            padding: 40px;
+        }
+        
+        .fullscreen-mode .writing-area {
+            height: calc(100vh - 200px);
+            border: none;
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="login-screen">
+        <h1>📝 Writing Task</h1>
+        <p class="subtitle">Enter your details to begin</p>
+        
+        <div class="form-grid">
+            <div class="input-group">
+                <label for="firstName">First Name</label>
+                <input type="text" id="firstName" placeholder="John" autocomplete="off">
+            </div>
+            <div class="input-group">
+                <label for="lastName">Last Name</label>
+                <input type="text" id="lastName" placeholder="Smith" autocomplete="off">
+            </div>
+            <div class="input-group">
+                <label for="className">Class</label>
+                <input type="text" id="className" placeholder="3A" autocomplete="off">
+            </div>
+            <div class="input-group">
+                <label for="examDate">Date</label>
+                <input type="date" id="examDate" autocomplete="off">
+            </div>
+        </div>
+        
+        <div class="warning-box">
+            <strong>Important Instructions:</strong>
+            <ul>
+                <li>The task will open in fullscreen mode</li>
+                <li>You should write at least 200 words</li>
+                <li>Do not switch tabs or exit fullscreen during the task</li>
+                <li>After a warning, your work will be marked as fraud and submitted</li>
+                <li>Spell check is disabled - write in your own words</li>
+            </ul>
+        </div>
+        
+        <button class="btn btn-primary" id="startBtn" onclick="startExam()">
+            Start Task in Fullscreen
+        </button>
+        
+        <div id="errorMsg" class="error-message" style="display: none;"></div>
+    </div>
+
+    <div class="container fullscreen-mode" id="writing-screen">
+        <div class="info-bar" id="infoBar"></div>
+        <div class="timer" id="timer"></div>
+        
+        <h1>Writing Task</h1>
+        <p class="subtitle" id="studentInfo"></p>
+        
+        <textarea 
+            class="writing-area" 
+            id="essayText"
+            placeholder="Start writing your text here..."
+            spellcheck="false"
+            autocomplete="off"
+            autocorrect="off"
+            autocapitalize="off"
+        ></textarea>
+        
+        <div class="word-count" id="wordCount">Word count: 0</div>
+        
+        <button class="btn btn-success" onclick="submitExam()">
+            Submit Task
+        </button>
+    </div>
+
+    <div class="container" id="submit-screen">
+        <div class="success-message">
+            <div class="success-icon">✓</div>
+            <h1>Thanks! I've got it!</h1>
+            <p class="subtitle">You may now close this device.</p>
+        </div>
+    </div>
+
+    <script>
+        // CONFIGURATION - Replace this URL with your Google Apps Script web app URL
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwaPSYXZXcJdCzdPp89TrOt18uh-kMhnDOF-lMMv-ufHLu_AR4YJ3pRan-q4fsYmZfbOw/exec';
+        
+        let studentFirstName = '';
+        let studentLastName = '';
+        let studentClass = '';
+        let examDate = '';
+        let startTime;
+        let timerInterval;
+        let tabSwitches = 0;
+        let warnings = 0;
+        let isFraud = false;
+        let wordCount = 0;
+
+        // Set today's date as default
+        document.addEventListener('DOMContentLoaded', function() {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('examDate').value = today;
+        });
+
+        // Check fullscreen and warn on exit
+        document.addEventListener('fullscreenchange', function() {
+            if (!document.fullscreenElement && document.getElementById('writing-screen').style.display === 'block' && !isFraud) {
+                warnings++;
+                console.log('Fullscreen exit. Warnings:', warnings);
+                if (warnings >= 3) {
+                    isFraud = true;
+                    alert('💀 You have violated the task rules! This task is now marked as FRAUD and will be submitted automatically.');
+                    setTimeout(() => submitExam(), 1000);
+                } else {
+                    alert(`🧐 You exited fullscreen mode. Naughty! One more violation and your task will be marked as fraud!`);
+                    enterFullscreen();
+                }
+            }
+        });
+
+        // Detect tab switches
+        document.addEventListener('visibilitychange', function() {
+            if (document.hidden && document.getElementById('writing-screen').style.display === 'block' && !isFraud) {
+                tabSwitches++;
+                warnings++;
+                console.log('Tab switch. Warnings:', warnings);
+                if (warnings >= 3) {
+                    isFraud = true;
+                    alert('💀 You have violated the task rules! This task is now marked as FRAUD and will be submitted automatically.');
+                    setTimeout(() => submitExam(), 1000);
+                } else {
+                    alert(`🧐 Switching tabs/windows is not allowed! Naughty! One more violation and your task will be marked as fraud!`);
+                }
+            }
+        });
+
+        // Prevent accidental page close
+        window.addEventListener('beforeunload', function(e) {
+            if (document.getElementById('writing-screen').style.display === 'block') {
+                e.preventDefault();
+                e.returnValue = '';
+            }
+        });
+
+        // Update word count
+        document.getElementById('essayText').addEventListener('input', function() {
+            const text = this.value.trim();
+            wordCount = text.length > 0 ? text.split(/\s+/).length : 0;
+            const countEl = document.getElementById('wordCount');
+            countEl.textContent = `Word count: ${wordCount}`;
+            
+            if (wordCount < 200) {
+                countEl.className = 'word-count low';
+            } else {
+                countEl.className = 'word-count good';
+            }
+        });
+
+        function enterFullscreen() {
+            const elem = document.documentElement;
+            if (elem.requestFullscreen) {
+                elem.requestFullscreen();
+            } else if (elem.webkitRequestFullscreen) {
+                elem.webkitRequestFullscreen();
+            } else if (elem.msRequestFullscreen) {
+                elem.msRequestFullscreen();
+            }
+        }
+
+        function startExam() {
+            const firstName = document.getElementById('firstName').value.trim();
+            const lastName = document.getElementById('lastName').value.trim();
+            const className = document.getElementById('className').value.trim();
+            const date = document.getElementById('examDate').value;
+            
+            if (!firstName || !lastName || !className || !date) {
+                showError('Please fill in all fields before starting.');
+                return;
+            }
+            
+            studentFirstName = firstName;
+            studentLastName = lastName;
+            studentClass = className;
+            examDate = date;
+            
+            // Enter fullscreen
+            enterFullscreen();
+            
+            // Switch screens
+            document.getElementById('login-screen').style.display = 'none';
+            document.getElementById('writing-screen').style.display = 'block';
+            
+            // Update info
+            document.getElementById('studentInfo').textContent = `${firstName} ${lastName} - Class ${className}`;
+            document.getElementById('infoBar').textContent = `${firstName} ${lastName} | ${className}`;
+            
+            // Start timer
+            startTime = new Date();
+            startTimer();
+            
+            // Focus on text area
+            document.getElementById('essayText').focus();
+        }
+
+        function startTimer() {
+            timerInterval = setInterval(function() {
+                const elapsed = Math.floor((new Date() - startTime) / 1000);
+                const minutes = Math.floor(elapsed / 60);
+                const seconds = elapsed % 60;
+                document.getElementById('timer').textContent = `⏱️ ${minutes}:${seconds.toString().padStart(2, '0')}`;
+            }, 1000);
+        }
+
+        function submitExam() {
+            const essayText = document.getElementById('essayText').value.trim();
+            
+            // Check word count if not fraud
+            if (!isFraud && wordCount < 200) {
+                if (!confirm(`Your text has only ${wordCount} words (minimum 200). Submit anyway?`)) {
+                    return;
+                }
+            }
+            
+            if (!isFraud && !essayText) {
+                alert('Please write something before submitting.');
+                return;
+            }
+            
+            const endTime = new Date();
+            const duration = Math.floor((endTime - startTime) / 1000);
+            
+            // Create form to submit
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = SCRIPT_URL;
+            form.target = 'hidden_iframe';
+            form.style.display = 'none';
+            
+            const fields = {
+                firstName: studentFirstName,
+                lastName: studentLastName,
+                className: studentClass,
+                examDate: examDate,
+                essayText: essayText,
+                wordCount: wordCount,
+                duration: duration,
+                tabSwitches: tabSwitches,
+                warnings: warnings,
+                isFraud: isFraud,
+                timestamp: new Date().toISOString()
+            };
+            
+            for (const [key, value] of Object.entries(fields)) {
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = key;
+                input.value = value;
+                form.appendChild(input);
+            }
+            
+            // Create hidden iframe
+            let iframe = document.getElementById('hidden_iframe');
+            if (!iframe) {
+                iframe = document.createElement('iframe');
+                iframe.name = 'hidden_iframe';
+                iframe.id = 'hidden_iframe';
+                iframe.style.display = 'none';
+                document.body.appendChild(iframe);
+            }
+            
+            iframe.onload = function() {
+                setTimeout(() => {
+                    clearInterval(timerInterval);
+                    document.getElementById('writing-screen').style.display = 'none';
+                    document.getElementById('submit-screen').style.display = 'block';
+                    
+                    if (document.exitFullscreen) {
+                        document.exitFullscreen();
+                    }
+                }, 500);
+            };
+            
+            document.body.appendChild(form);
+            form.submit();
+        }
+
+        function showError(message) {
+            const errorDiv = document.getElementById('errorMsg');
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+        }
+    </script>
+</body>
+</html>
